@@ -16,24 +16,20 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Table(name="Hotel")
 @Builder
-public class HotelDatabase {
+public class HotelRoom {
     @Id
     @Column(name = "uuid",length = 100)
     private String uuid;
-    @Column(name = "room-no",length = 100)
+    @Column(name = "roomNo",length = 100)
     private String roomNo;
-    @Column(name = "room-type",length = 100)
+    @Column(name = "roomType",length = 100)
     private String roomType;
-    @Column(name = "room-description",length = 100)
+    @Column(name = "roomDescription",length = 100)
     private String roomDescription;
-    @Column(name = "room-rent",length = 100)
+    @Column(name = "roomRent",length = 100)
     private String roomRent;
-    @Column(name="start date",length = 10,nullable = true)
+    @Column(name="startDate",length = 10)
     private String startDate;
-    @Column(name="end date",length = 10,nullable = true)
+    @Column(name="endDate",length = 10)
     private String endDate;
-    @Column(name="reservation-status",insertable = true)
-    private boolean reservationStatus;
-
-
 }

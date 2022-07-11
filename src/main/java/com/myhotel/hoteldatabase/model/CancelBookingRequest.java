@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OutputRequest {
-    private  String massage;
+public class CancelBookingRequest {
+    private String roomNo;
+    private String userPh;
 }

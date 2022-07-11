@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InputRequest {
-    private String uuid;
-    private String roomNo;
-    private String roomType;
-    private String roomDescription;
-    private String roomRent;
+public class ViewDetailsResponse {
     private String startDate;
     private String endDate;
-    private boolean reservationStatus;
+    private String reservationDate;
+    private String roomNo;
+    private String roomType;
+    private String roomRent;
+    private String roomDescription;
+    private Boolean reservationStatus;
 }
