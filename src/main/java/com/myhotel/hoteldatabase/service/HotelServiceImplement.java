@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class HotelServiceImplement {
+public class HotelServiceImplement implements HotelService{
     private String massage;
     @Autowired
     private HotelRepository hotelRepository;

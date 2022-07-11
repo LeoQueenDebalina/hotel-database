@@ -13,10 +13,8 @@ public class HotelController {
     @Autowired
     private HotelService hotelService;
 
-
-
-    @PostMapping(value = "/datas")
-    public OutputRequest saveHotelData(@RequestBody InputRequest inputRequest){
+    @PostMapping("/addroom")
+    public OutputRequest saveRoomData(@RequestBody InputRequest inputRequest){
         return new OutputRequest(this.hotelService.saveHotelData(inputRequest));
     }
 }

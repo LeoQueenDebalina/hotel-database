@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InputRequest {
-    private String uuid;
     private String roomNo;
     private String roomType;
     private String roomDescription;
