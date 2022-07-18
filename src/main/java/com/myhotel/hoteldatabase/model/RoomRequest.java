@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InputRequest {
+public class RoomRequest {
     private String uuid;
     private String roomNo;
     private String roomType;
