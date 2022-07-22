@@ -10,5 +10,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Component
 public class RoomBookResponse {
+    private boolean error;
     private String message;
 }

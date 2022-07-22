@@ -2,6 +2,7 @@ package com.myhotel.hoteldatabase.service;
 
 import com.myhotel.hoteldatabase.entity.HotelRoom;
 import com.myhotel.hoteldatabase.entity.RoomBooking;
+import com.myhotel.hoteldatabase.exception.NoDataFoundException;
 import com.myhotel.hoteldatabase.model.*;
 import com.myhotel.hoteldatabase.repository.HotelRoomRepository;
 import com.myhotel.hoteldatabase.repository.RoomBookingRepository;
@@ -9,93 +10,87 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
-public class HotelService{
-    private String message;
+public class HotelService {
     @Autowired
     private HotelRoomRepository hotelRoomRepository;
     @Autowired
     private RoomBookingRepository roomBookingRepository;
 
-    public String saveHotelData(RoomRequest roomRequest) {
+    public OutputResponse saveHotelData(RoomRequest roomRequest) {
         try {
             UUID uuid = UUID.randomUUID();
-            List list = Arrays.asList(roomRequest);
-            List<HotelRoom> test = (List<HotelRoom>) list.stream().map(e -> HotelRoom.builder()
+            this.hotelRoomRepository.save(HotelRoom.builder()
                     .uuid(String.valueOf(uuid))
                     .roomNo(roomRequest.getRoomNo())
                     .roomType(roomRequest.getRoomType())
                     .roomDescription(roomRequest.getRoomDescription())
                     .roomRent(roomRequest.getRoomRent())
-                    .startDate(roomRequest.getStartDate())
-                    .endDate(roomRequest.getEndDate())
-                    .build()).collect(Collectors.toList());
-            hotelRoomRepository.saveAll(test);
-            message = "All data are saved";
-        } catch (Exception e){
-            message = "Internal server error";
+                    .startDate("0")
+                    .endDate("0")
+                    .build());
+            return new OutputResponse(false, "All data are saved");
+        } catch (Exception e) {
+            return new OutputResponse(true, "Internal server error");
         }
-        return message;
     }
 
     public List<RoomSearchResponse> searchData(RoomSearchRequest roomSearchRequest) {
         List<RoomSearchResponse> list = new ArrayList<>();
-        for (HotelRoom r : this.hotelRoomRepository.searchRoom(roomSearchRequest.getStartDate(),roomSearchRequest.getEndDate(),roomSearchRequest.getStartDate(),roomSearchRequest.getEndDate(),roomSearchRequest.getRoomType())){
-            list.add(new RoomSearchResponse(r.getRoomNo(),r.getRoomType(),r.getRoomDescription(),r.getRoomRent()));
+        for (HotelRoom hotelRoom : this.hotelRoomRepository.searchRoom(roomSearchRequest.getStartDate(), roomSearchRequest.getEndDate(), roomSearchRequest.getStartDate(), roomSearchRequest.getEndDate(), roomSearchRequest.getRoomType())) {
+            list.add(new RoomSearchResponse(hotelRoom.getRoomNo(), hotelRoom.getRoomType(), hotelRoom.getRoomDescription(), hotelRoom.getRoomRent()));
         }
         return list;
     }
 
-    public String bookRoom(String id, RoomBookRequest roomBookRequest) {
+    public RoomBookResponse bookRoom(String id, RoomBookRequest roomBookRequest) {
         try {
             UUID uuid = UUID.randomUUID();
-            String roomId = this.hotelRoomRepository.getRoomIdByNo(roomBookRequest.getStartDate(),roomBookRequest.getEndDate(),roomBookRequest.getStartDate(),roomBookRequest.getEndDate(),roomBookRequest.getRoomNo());
-            if (roomId!=null){
-                this.roomBookingRepository.reRoom(String.valueOf(java.time.LocalDate.now()),roomBookRequest.getRoomNo());
-                if (!this.roomBookingRepository.findByUIdRNo(id,roomBookRequest.getRoomNo())) {
+            String roomId = this.hotelRoomRepository.getRoomIdByNo(roomBookRequest.getStartDate(), roomBookRequest.getEndDate(), roomBookRequest.getStartDate(), roomBookRequest.getEndDate(), roomBookRequest.getRoomNo());
+            if (roomId != null) {
+                this.roomBookingRepository.reRoom(String.valueOf(java.time.LocalDate.now()), roomBookRequest.getRoomNo());
+                if (!this.roomBookingRepository.findByUIdRNo(id, roomBookRequest.getRoomNo())) {
                     RoomBooking list = new RoomBooking(String.valueOf(uuid), roomId, id, roomBookRequest.getStartDate(), roomBookRequest.getEndDate(), true, String.valueOf(new Date()), roomBookRequest.getRoomNo());
                     this.roomBookingRepository.save(list);
-                    this.hotelRoomRepository.updateRoom(roomBookRequest.getStartDate(),roomBookRequest.getEndDate(),roomId);
-                    message = "Your room is Booked At " + new Date() + " Your room no is " + roomBookRequest.getRoomNo();
-                }else {
-                    message = "Room is already booked";
+                    this.hotelRoomRepository.updateRoom(roomBookRequest.getStartDate(), roomBookRequest.getEndDate(), roomId);
+                    return new RoomBookResponse(false, "Your room is Booked At " + new Date() + " Your room no is " + roomBookRequest.getRoomNo());
+                } else {
+                    return new RoomBookResponse(true, "Room is already booked");
                 }
-            }else {
-                message = "Room is not available";
+            } else {
+                return new RoomBookResponse(true, "Room is not available");
             }
         } catch (Exception e) {
-            message = "Internal server error";
-            e.printStackTrace();
+            return new RoomBookResponse(true, "Internal server error");
         }
-        return message;
     }
 
-    public List<ViewDetailsResponse> getDetails(String id) {
+    public List<ViewDetailsResponse> getDetails(String id) throws NoDataFoundException {
         List<ViewDetailsResponse> list = new ArrayList<>();
-        for (RoomBooking r: this.roomBookingRepository.findAllRoomById(id)) {
-            Optional<HotelRoom> ripo = this.hotelRoomRepository.findById(r.getRoomUuid());
-            if (ripo.isPresent()) {
-                list.add(new ViewDetailsResponse(r.getStartDate(), r.getEndDate(), r.getReservationDate(), ripo.get().getRoomNo(),ripo.get().getRoomType(),ripo.get().getRoomRent(),ripo.get().getRoomDescription(),r.getReservationStatus()));
+        for (RoomBooking roomBooking : this.roomBookingRepository.findAllRoomById(id)) {
+            Optional<HotelRoom> hotelRoom = this.hotelRoomRepository.findById(roomBooking.getRoomUuid());
+            if (hotelRoom.isPresent()) {
+                list.add(new ViewDetailsResponse(roomBooking.getStartDate(), roomBooking.getEndDate(), roomBooking.getReservationDate(), hotelRoom.get().getRoomNo(), hotelRoom.get().getRoomType(), hotelRoom.get().getRoomRent(), hotelRoom.get().getRoomDescription(), roomBooking.getReservationStatus()));
             } else {
-                return null;
+                throw new NoDataFoundException("Data not found");
             }
         }
         return list;
     }
 
-    public String cancelById(String id, String roomNo) {
+    public OutputResponse cancelById(String id, String roomNo) {
         try {
-            for (RoomBooking r: this.roomBookingRepository.findRoomById(String.valueOf(java.time.LocalDate.now()),id,roomNo)) {
-                this.roomBookingRepository.cancelRoom(r.getRegistrationUuid());
-                this.hotelRoomRepository.unReservedRoom(r.getRoomUuid(),r.getRoomNo());
-                message = "Your room is canceled";
+            System.out.println(id+roomNo);
+            System.out.println(java.time.LocalDate.now());
+            for (RoomBooking roomBooking : this.roomBookingRepository.findRoomById(String.valueOf(java.time.LocalDate.now()), id, roomNo)) {
+                this.roomBookingRepository.cancelRoom(roomBooking.getRegistrationUuid());
+                this.hotelRoomRepository.unReservedRoom(roomBooking.getRoomUuid(), roomBooking.getRoomNo());
+                return new OutputResponse(false, "Your room is canceled");
             }
-        } catch (Exception e){
-            message = "Internal server error";
-            e.printStackTrace();
+        } catch (Exception e) {
+            return new OutputResponse(true, "Internal server error");
         }
-        return message;
+        return new OutputResponse(true, "Cancellation time out");
     }
 }

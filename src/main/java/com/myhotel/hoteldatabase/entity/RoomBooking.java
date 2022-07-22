@@ -20,17 +20,17 @@ public class RoomBooking {
     @Id
     @Column(name="registrationUuid",length = 100,nullable = false)
     private String registrationUuid;
-    @Column(name="roomUuid",length = 100)
+    @Column(name="roomUuid",length = 100, nullable = false)
     private String roomUuid;
-    @Column(name="userUuid",length = 100)
+    @Column(name="userUuid",length = 100, nullable = false)
     private String userUuid;
-    @Column(name="startDate",length = 100)
+    @Column(name="startDate",length = 100, nullable = false)
     private String startDate;
-    @Column(name="endDate",length = 100)
+    @Column(name="endDate",length = 100, nullable = false)
     private String endDate;
-    @Column(name="reservationStatus",length = 100)
+    @Column(name="reservationStatus",length = 100, nullable = false)
     private Boolean reservationStatus;
-    @Column(name="reservationDate",length = 100)
+    @Column(name="reservationDate",length = 100, nullable = false)
     private  String reservationDate;
     @Column(name="roomNo",length = 100)
     private String roomNo;

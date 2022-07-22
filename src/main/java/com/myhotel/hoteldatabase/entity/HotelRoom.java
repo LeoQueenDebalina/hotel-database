@@ -18,19 +18,18 @@ import javax.persistence.Table;
 @Builder
 public class HotelRoom {
     @Id
-    @Column(name = "uuid",length = 100)
+    @Column(name = "uuid",length = 100, nullable = false)
     private String uuid;
-    @Column(name = "roomNo",length = 100)
+    @Column(name = "roomNo",length = 100, nullable = false)
     private String roomNo;
-    @Column(name = "roomType",length = 100)
+    @Column(name = "roomType",length = 100, nullable = false)
     private String roomType;
-    @Column(name = "roomDescription",length = 100)
+    @Column(name = "roomDescription",length = 100, nullable = false)
     private String roomDescription;
-    @Column(name = "roomRent",length = 100)
+    @Column(name = "roomRent",length = 100, nullable = false)
     private String roomRent;
     @Column(name="startDate",length = 10)
     private String startDate;
     @Column(name="endDate",length = 10)
     private String endDate;
-
 }

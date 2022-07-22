@@ -12,5 +12,4 @@ public class RoomSearchResponse {
     private String roomType;
     private String roomDescription;
     private String roomRent;
-
 }
