@@ -5,10 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Data
@@ -29,7 +27,9 @@ public class HotelRoom {
     @Column(name = "roomRent",length = 100, nullable = false)
     private String roomRent;
     @Column(name="startDate",length = 10)
-    private String startDate;
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
     @Column(name="endDate",length = 10)
-    private String endDate;
+    @Temporal(TemporalType.DATE)
+    private Date endDate;
 }

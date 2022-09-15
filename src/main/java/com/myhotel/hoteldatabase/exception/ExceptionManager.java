@@ -27,4 +27,10 @@ public class ExceptionManager {
         valid.put("errorMessage", ex.getMessage());
         return new ResponseEntity<>(valid, HttpStatus.BAD_GATEWAY);
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String,String>> exception(Exception ex){
+        Map<String, String> valid = new HashMap<>();
+        valid.put("errorMessage", ex.getMessage());
+        return new ResponseEntity<>(valid, HttpStatus.BAD_GATEWAY);
+    }
 }
